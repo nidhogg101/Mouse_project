@@ -27,3 +27,7 @@ Starttimes2<-with_tz(Starttimes,"UTC")
 TimeSinceDeath<-difftime(Checktimes2,Starttimes2,units="mins")
 TimeSinceDeath<-round(TimeSinceDeath,0)
 initial_data$Timesincedeath<-TimeSinceDeath
+Deathtimer<-as.numeric(initial_data$Timesincedeath)
+#Our outcome variable is now ready for analysis
+#Now we build our predictor variables 
+
