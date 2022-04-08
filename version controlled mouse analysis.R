@@ -22,3 +22,8 @@ Checktimes2<-with_tz(Checktimes,"UTC")
 #Start time classification, specifying format as above
 Starttimes<-as.POSIXct(initial_data$`Start_date_&_time`, format = "%m/%d/%Y %H:%M:%S")
 Starttimes2<-with_tz(Starttimes,"UTC")
+
+#Building a column with the calculation 
+TimeSinceDeath<-difftime(Checktimes2,Starttimes2,units="mins")
+TimeSinceDeath<-round(TimeSinceDeath,0)
+initial_data$Timesincedeath<-TimeSinceDeath
