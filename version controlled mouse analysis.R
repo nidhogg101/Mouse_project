@@ -50,6 +50,7 @@ InfestStatus<-ifelse(initial_data$Infestation_status=="Yes",1,0)
 initial_data<-transform(initial_data,ID=as.numeric(interaction(initial_data$`Start month`,initial_data$Turbine,initial_data$Flag,drop=TRUE)))
 Mousecut<-ifelse(initial_data$TREATMENT=="Cut",1,0)
 Month1<-ifelse(initial_data$Start.month=="August",1,0)
+monthly<-initial_data$Start.month
 
 #Some simple plots for each predictor 
 install.packages("ggplot2")
@@ -78,3 +79,16 @@ eyeplot<-ggplot(initial_data,aes(Deathtimer,Eyestatus))+
        title = "eye status vs carcass age")
 basicplot1<-eyeplot+infestplot+furplot+smellplot
 basicplot1<-basicplot1+plot_annotation(title="Carcass characteristics against time since death")
+
+#Now, we are going to build some GLMs and remove statistically insignificant variables
+install.packages("TMB",type = 'source')
+library(TMB)
+install.packages("glmmTMB")
+library(glmmTMB)
+
+#Determining statistically significant predictors for smell model
+smellGLM<-glmmTMB(Deathtimer~simplescent*monthly+(1|ID)+Mousecut,data=initial_data)
+summary(smellGLM)
+#month and interaction term not significant. Removing along with treatment
+smellGLM2<-glmmTMB(Deathtimer~simplescent+(1|ID),data=initial_data)
+summary(smellGLM2)
