@@ -38,7 +38,7 @@ Eyestatus<-ifelse(initial_data$Eyes=="glossy",0,1)
 furtime<-ifelse(initial_data$'Fur'=="Removable",1,0)
 #Need to make a column for 'total' infestation - maggots & everything else 
 install.packages("dplyr")
-library(dplr)
+library(dplyr)
 initial_data<-mutate(initial_data,Infestation_status = case_when(initial_data$`Maggots Present?`=="No"&initial_data$`Other Infestation`=="None"~ "No",
                                              initial_data$`Maggots Present?`=="No"&!initial_data$`Other Infestation`=="None"~"Yes",
                                              !initial_data$`Maggots Present?`=="No"&initial_data$`Other Infestation`=="None"~"Yes",
