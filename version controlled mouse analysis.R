@@ -92,3 +92,5 @@ summary(smellGLM)
 #month and interaction term not significant. Removing along with treatment
 smellGLM2<-glmmTMB(Deathtimer~simplescent+(1|ID),data=initial_data)
 summary(smellGLM2)
+
+#Determining statistically significant predictors for fur model 
