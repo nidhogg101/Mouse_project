@@ -50,3 +50,31 @@ InfestStatus<-ifelse(initial_data$Infestation_status=="Yes",1,0)
 initial_data<-transform(initial_data,ID=as.numeric(interaction(initial_data$`Start month`,initial_data$Turbine,initial_data$Flag,drop=TRUE)))
 Mousecut<-ifelse(initial_data$TREATMENT=="Cut",1,0)
 Month1<-ifelse(initial_data$Start.month=="August",1,0)
+
+#Some simple plots for each predictor 
+install.packages("ggplot2")
+install.packages("patchwork")
+library(patchwork)
+library(ggplot2)
+smellplot<-ggplot(initial_data,aes(Timesincedeath,simplescent))+
+  geom_point(aes(x=Timesincedeath))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
+  labs(x="time since death (min)", y ="presence of smell",
+       title = "decay smell vs carcass age")
+furplot<-ggplot(initial_data,aes(Timesincedeath,furtime))+
+  geom_point(aes(x=Timesincedeath))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
+  labs(x="time since death (min)", y ="fur status",
+       title = "condition of fur vs carcass age")
+infestplot<-ggplot(initial_data,aes(Deathtimer,InfestStatus))+
+  geom_point(aes(x=Deathtimer))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
+  labs(x="time since death (min)", y ="infestation status",
+       title = "infestation vs carcass age")
+eyeplot<-ggplot(initial_data,aes(Deathtimer,Eyestatus))+
+  geom_point(aes(x=Deathtimer))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
+  labs(x="time since death (min)", y ="eye status",
+       title = "eye status vs carcass age")
+basicplot1<-eyeplot+infestplot+furplot+smellplot
+basicplot1<-basicplot1+plot_annotation(title="Carcass characteristics against time since death")
