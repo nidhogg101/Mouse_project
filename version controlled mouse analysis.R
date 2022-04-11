@@ -94,3 +94,4 @@ smellGLM2<-glmmTMB(Deathtimer~simplescent+(1|ID),data=initial_data)
 summary(smellGLM2)
 
 #Determining statistically significant predictors for fur model 
+furGLM2<-glmmTMB(Deathtimer~furtime*monthly+(1|ID)+Mousecut,data=initial_data)
