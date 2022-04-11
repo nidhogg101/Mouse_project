@@ -28,6 +28,25 @@ TimeSinceDeath<-difftime(Checktimes2,Starttimes2,units="mins")
 TimeSinceDeath<-round(TimeSinceDeath,0)
 initial_data$Timesincedeath<-TimeSinceDeath
 Deathtimer<-as.numeric(initial_data$Timesincedeath)
+
 #Our outcome variable is now ready for analysis
 #Now we build our predictor variables 
-
+#Scent, Infestation, Eyes, Fur
+#Also, ID, cut treatment, and month
+simplescent<-ifelse(initial_data$Smell=="None",0,1)
+Eyestatus<-ifelse(initial_data$Eyes=="glossy",0,1)
+furtime<-ifelse(initial_data$'Fur'=="Removable",1,0)
+#Need to make a column for 'total' infestation - maggots & everything else 
+install.packages("dplyr")
+library(dplr)
+initial_data<-mutate(initial_data,Infestation_status = case_when(initial_data$`Maggots Present?`=="No"&initial_data$`Other Infestation`=="None"~ "No",
+                                             initial_data$`Maggots Present?`=="No"&!initial_data$`Other Infestation`=="None"~"Yes",
+                                             !initial_data$`Maggots Present?`=="No"&initial_data$`Other Infestation`=="None"~"Yes",
+                                             
+                                             !initial_data$`Maggots Present?`=="No"&!initial_data$`Other Infestation`=="None"~"Yes"
+))
+InfestStatus<-ifelse(initial_data$Infestation_status=="Yes",1,0)
+#creating Mouse ID 
+initial_data<-transform(initial_data,ID=as.numeric(interaction(initial_data$`Start month`,initial_data$Turbine,initial_data$Flag,drop=TRUE)))
+Mousecut<-ifelse(initial_data$TREATMENT=="Cut",1,0)
+Month1<-ifelse(initial_data$Start.month=="August",1,0)
