@@ -118,5 +118,6 @@ summary(EyeGLM2)
 #Fitting a model for all predictors
 InitialGLM<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+furtime+simplescent + monthly + (1|ID),data=initial_data, family = Gamma(link = "log"))
 summary(InitialGLM)
+#Month not significant, removed 
 InitialGLM2<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+furtime+simplescent + (1|ID),data=initial_data, family = Gamma(link = "log"))
 summary(InitialGLM2)
