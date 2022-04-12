@@ -79,6 +79,7 @@ eyeplot<-ggplot(initial_data,aes(Deathtimer,Eyestatus))+
        title = "eye status vs carcass age")
 basicplot1<-eyeplot+infestplot+furplot+smellplot
 basicplot1<-basicplot1+plot_annotation(title="Carcass characteristics against time since death")
+basicplot1
 
 #Now, we are going to build some GLMs and remove statistically insignificant variables
 install.packages("TMB",type = 'source')
@@ -94,4 +95,28 @@ smellGLM2<-glmmTMB(Deathtimer~simplescent+(1|ID),data=initial_data)
 summary(smellGLM2)
 
 #Determining statistically significant predictors for fur model 
-furGLM2<-glmmTMB(Deathtimer~furtime*monthly+(1|ID)+Mousecut,data=initial_data)
+furGLM<-glmmTMB(Deathtimer~furtime*monthly+(1|ID)+Mousecut,data=initial_data)
+summary(furGLM)
+#Treatment not significant
+furGLM2<-glmmTMB(Deathtimer~furtime*monthly+(1|ID),data=initial_data)
+summary(furGLM2)
+
+#Determining statistically significant predictors for infestation model
+InfestGLM<-glmmTMB(Deathtimer~InfestStatus*monthly+(1|ID)+Mousecut,data=initial_data)
+summary(InfestGLM)
+#Treatment not significant
+InfestGLM2<-glmmTMB(Deathtimer~InfestStatus*monthly+(1|ID),data=initial_data)
+summary(InfestGLM2)
+
+#Determining statistically significant predictors for eye model
+EyeGLM<-glmmTMB(Deathtimer~Eyestatus*monthly+(1|ID)+Mousecut,data=initial_data)
+summary(EyeGLM)
+#Month and treatment not significant, along with interaction term
+EyeGLM2<-glmmTMB(Deathtimer~Eyestatus+(1|ID),data=initial_data)
+summary(EyeGLM2)
+
+#Fitting a model for all predictors
+InitialGLM<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+furtime+simplescent + monthly + (1|ID),data=initial_data, family = Gamma(link = "log"))
+summary(InitialGLM)
+InitialGLM2<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+furtime+simplescent + (1|ID),data=initial_data, family = Gamma(link = "log"))
+summary(InitialGLM2)
