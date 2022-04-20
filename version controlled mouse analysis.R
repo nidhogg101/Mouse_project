@@ -121,3 +121,38 @@ summary(InitialGLM)
 #Month not significant, removed 
 InitialGLM2<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+furtime+simplescent + (1|ID),data=initial_data, family = Gamma(link = "log"))
 summary(InitialGLM2)
+
+#Comparing AIC and log-likelihood for various combinations of predictors
+#Begin by making a test for each combination 
+
+test1<-glmmTMB(Deathtimer~Eyestatus+furtime+simplescent+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test1)
+test2<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+simplescent+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test2)
+test3<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+furtime+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test3)
+test4<-glmmTMB(Deathtimer~simplescent+InfestStatus+furtime+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test4)
+test5<-glmmTMB(Deathtimer~simplescent+furtime+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test5)
+test6<-glmmTMB(Deathtimer~Eyestatus+InfestStatus+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test6)
+test7<-glmmTMB(Deathtimer~furtime+InfestStatus+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test7)
+test8<-glmmTMB(Deathtimer~simplescent+Eyestatus+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test8)
+test9<-glmmTMB(Deathtimer~furtime+InfestStatus+Eyestatus+simplescent+(1|ID),data=initial_data,family=Gamma(link="log"))
+summary(test9)
+
+#Diagnostics for each test- are we meeting assumptions?
+install.packages("DHARMa")
+library(DHARMa)
+simulation1output<-simulateResiduals(fittedModel=test1,plot=TRUE)
+simulation2output<-simulateResiduals(fittedModel=test2,plot=TRUE)
+simulation3output<-simulateResiduals(fittedModel=test3,plot=TRUE)
+simulation4output<-simulateResiduals(fittedModel=test4,plot=TRUE)
+simulation5output<-simulateResiduals(fittedModel=test5,plot=TRUE)
+simulation6output<-simulateResiduals(fittedModel=test6,plot=TRUE)
+simulation7output<-simulateResiduals(fittedModel=test7,plot=TRUE)
+simulation8output<-simulateResiduals(fittedModel=test8,plot=TRUE)
+simulation9output<-simulateResiduals(fittedModel=test9,plot=TRUE)
