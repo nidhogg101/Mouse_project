@@ -61,24 +61,25 @@ smellplot<-ggplot(initial_data,aes(Timesincedeath,simplescent))+
   geom_point(aes(x=Timesincedeath))+
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x="time since death (min)", y ="presence of smell",
-       title = "decay smell vs carcass age")
+       title = "D")
 furplot<-ggplot(initial_data,aes(Timesincedeath,furtime))+
   geom_point(aes(x=Timesincedeath))+
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
   labs(x="time since death (min)", y ="fur status",
-       title = "condition of fur vs carcass age")
+       title = "C")
 infestplot<-ggplot(initial_data,aes(Deathtimer,InfestStatus))+
   geom_point(aes(x=Deathtimer))+
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
   labs(x="time since death (min)", y ="infestation status",
-       title = "infestation vs carcass age")
+       title = "B")
 eyeplot<-ggplot(initial_data,aes(Deathtimer,Eyestatus))+
   geom_point(aes(x=Deathtimer))+
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
   labs(x="time since death (min)", y ="eye status",
-       title = "eye status vs carcass age")
+       title = "A")
 basicplot1<-eyeplot+infestplot+furplot+smellplot
 basicplot1<-basicplot1+plot_annotation(title="Carcass characteristics against time since death")
+#A = eyes, B = infestation, C - fur, D = scent
 basicplot1
 
 #Now, we are going to build some GLMs and remove statistically insignificant variables
@@ -179,5 +180,6 @@ SecondFigure2<-SecondFigure+labs(title="Model predictions for time since death")
 furnames<-c('0'="Intact",'1'="Removable")
 scentnames<-c('0'="No scent",'1'="scent present") 
 SecondFigure3<-SecondFigure2+facet_grid(fur~scent,labeller=labeller(fur=as_labeller(furnames),scent=as_labeller(scentnames)))
-SecondFigure4<-SecondFigure3+scale_color_discrete(name = "Eyes", labels = c("1" = "Damaged", "0" = "Round and moist"))
+SecondFigure4<-SecondFigure3+scale_color_discrete(name = "Eyes", labels = c("1" = "Damaged/Absent", "0" = "Round and moist"))
 SecondFigure5<-SecondFigure4+labs(x = "Infestation", y = "Time since death (min)")
+SecondFigure5
