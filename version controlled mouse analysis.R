@@ -183,3 +183,8 @@ SecondFigure3<-SecondFigure2+facet_grid(fur~scent,labeller=labeller(fur=as_label
 SecondFigure4<-SecondFigure3+scale_color_discrete(name = "Eyes", labels = c("1" = "Damaged/Absent", "0" = "Round and moist"))
 SecondFigure5<-SecondFigure4+labs(x = "Infestation", y = "Time since death (min)")
 SecondFigure5
+
+install.packages("writexl")
+library(writexl)
+tempfile(fileext = "C:\\Users\\nicho\\Documents\\001 Nicholas Documents\\Employment\\AAA BCI\\mouse paper\\test.xlsx")
+write_xlsx(marginal1)
