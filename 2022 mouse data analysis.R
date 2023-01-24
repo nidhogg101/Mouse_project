@@ -41,6 +41,7 @@ mydata<-filter(mydata,TimeSinceDeath>0)
 mydata$TimeSinceDeath
 mydata<-filter(mydata,TimeSinceDeath<10000)
 mydata$TimeSinceDeath
+Deathtimer<-as.numeric(TimeSinceDeath)
 #Our outcome variable is now ready for analysis
 #Now we build our predictor variables 
 #Scent, Infestation, Eyes, Fur
@@ -49,3 +50,31 @@ scent<-ifelse(mydata$Scent.of.Decay.=="None",0,1)
 eyes<-ifelse(mydata$Left.Eye.Condition=="RoundFluid"&mydata$Right.Eye.Condition=="RoundFluid",0,1)
 fur<-ifelse(mydata$Fur.Condition=="Removable",1,0)
 infest<-ifelse(mydata$Infestation=="None",0,1)
+
+install.packages("ggplot2")
+install.packages("patchwork")
+library(patchwork)
+library(ggplot2)
+smellplot<-ggplot(mydata,aes(TimeSinceDeath,scent))+
+  geom_point(aes(x=TimeSinceDeath))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
+  labs(x="time since death (min)", y ="presence of smell",
+       title = "D")
+furplot<-ggplot(mydata,aes(TimeSinceDeath,fur))+
+  geom_point(aes(x=TimeSinceDeath))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
+  labs(x="time since death (min)", y ="fur status",
+       title = "C")
+infestplot<-ggplot(mydata,aes(TimeSinceDeath,infest))+
+  geom_point(aes(x=TimeSinceDeath))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
+  labs(x="time since death (min)", y ="infestation status",
+       title = "B")
+eyeplot<-ggplot(mydata,aes(TimeSinceDeath,eyes))+
+  geom_point(aes(x=TimeSinceDeath))+
+  geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE)+
+  labs(x="time since death (min)", y ="eye status",
+       title = "A")
+basicplot1<-eyeplot+infestplot+furplot+smellplot
+basicplot1<-basicplot1+plot_annotation(title="Carcass characteristics against time since death")
+basicplot1
