@@ -24,17 +24,28 @@ mydata<-merge(CarcassInfo1,CarcassInfo2,by="ParentGlobalID")
 #need date-time objects for difftime function
 Checktimes<-as.POSIXct(mydata$`CheckTime`, format = "%m/%d/%Y %H:%M:%S")
 Starttimes<-as.POSIXct(mydata$`CreationDate`, format = "%m/%d/%Y %H:%M:%S")
+#Need to set time zone for difftime function
 install.packages("lubridate")
 library(lubridate)
 Starttimes2<-with_tz(Starttimes,"UTC")
 Checktimes2<-with_tz(Checktimes,"UTC")
+#run the difftime function
 TimeSinceDeath<-difftime(Checktimes,Starttimes,units="mins")
 TimeSinceDeath
 TimeSinceDeath<-round(TimeSinceDeath,0)
 TimeSinceDeath
+#Then, filter out test entries and errors
 mydata[mydata$CreationDate,43]
 mydata$TimeSinceDeath<-TimeSinceDeath
 mydata<-filter(mydata,TimeSinceDeath>0)
 mydata$TimeSinceDeath
 mydata<-filter(mydata,TimeSinceDeath<10000)
 mydata$TimeSinceDeath
+#Our outcome variable is now ready for analysis
+#Now we build our predictor variables 
+#Scent, Infestation, Eyes, Fur
+scent<-ifelse(mydata$Scent.of.Decay.=="None",0,1)
+#will make one column for both eyes
+eyes<-ifelse(mydata$Left.Eye.Condition=="RoundFluid"&mydata$Right.Eye.Condition=="RoundFluid",0,1)
+fur<-ifelse(mydata$Fur.Condition=="Removable",1,0)
+infest<-ifelse(mydata$Infestation=="None",0,1)
