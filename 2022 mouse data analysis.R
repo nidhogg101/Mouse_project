@@ -45,12 +45,13 @@ Deathtimer<-as.numeric(TimeSinceDeath)
 #Our outcome variable is now ready for analysis
 #Now we build our predictor variables 
 #Scent, Infestation, Eyes, Fur
-scent<-ifelse(mydata$Scent.of.Decay.=="None",0,1)
+mydata$scent<-ifelse(mydata$Scent.of.Decay.=="None",0,1)
 #will make one column for both eyes
-eyes<-ifelse(mydata$Left.Eye.Condition=="RoundFluid"&mydata$Right.Eye.Condition=="RoundFluid",0,1)
-fur<-ifelse(mydata$Fur.Condition=="Removable",1,0)
-infest<-ifelse(mydata$Infestation=="None",0,1)
+mydata$eyes<-ifelse(mydata$Left.Eye.Condition=="RoundFluid"&mydata$Right.Eye.Condition=="RoundFluid",0,1)
+mydata$fur<-ifelse(mydata$Fur.Condition=="Removable",1,0)
+mydata$infest<-ifelse(mydata$Infestation=="None",0,1)
 
+#some simple plots for each predictor
 install.packages("ggplot2")
 install.packages("patchwork")
 library(patchwork)
@@ -78,3 +79,18 @@ eyeplot<-ggplot(mydata,aes(TimeSinceDeath,eyes))+
 basicplot1<-eyeplot+infestplot+furplot+smellplot
 basicplot1<-basicplot1+plot_annotation(title="Carcass characteristics against time since death")
 basicplot1
+
+install.packages("TMB",type = 'source')
+library(TMB)
+install.packages("glmmTMB")
+library(glmmTMB)
+#Fitting a model for all predictors
+class(mydata$ParentGlobalID)
+mydata <- mydata %>%                                       
+  group_by(ParentGlobalID) %>%
+  dplyr::mutate(ID = cur_group_id())
+mydata
+mydata$MouseID<-as.numeric(mydata$ID)
+mydata$TimeSinceDeath<-as.numeric(mydata$TimeSinceDeath)
+InitialGLM<-glmmTMB(TimeSinceDeath~eyes+infest+fur+scent + (1|MouseID),data=mydata, family = Gamma(link = "log"))
+summary(InitialGLM)
