@@ -94,3 +94,13 @@ mydata$MouseID<-as.numeric(mydata$ID)
 mydata$TimeSinceDeath<-as.numeric(mydata$TimeSinceDeath)
 InitialGLM<-glmmTMB(TimeSinceDeath~eyes+infest+fur+scent + (1|MouseID),data=mydata, family = Gamma(link = "log"))
 summary(InitialGLM)
+mydata$DaysSinceDeath<-ifelse(mydata$TimeSinceDeath>=0&mydata$TimeSinceDeath<=1440,1,0)
+BinomialGLM<-glmmTMB(DaysSinceDeath~eyes+infest+fur+scent +(1|MouseID),data=mydata,family=binomial)
+summary(BinomialGLM)
+summary(InitialGLM)
+#Test9 is our best model, it includes all the predictors
+#Time to make a plot that visualizes these 
+install.packages("ggeffects")
+library(ggeffects)
+marginal1<-ggpredict(BinomialGLM, terms = c("infest","fur","scent","eyes"))
+plot(marginal1)
