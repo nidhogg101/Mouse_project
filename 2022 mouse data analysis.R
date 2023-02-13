@@ -341,3 +341,59 @@ SecondFigure5
 ##
 ## END version controlled mouse analysis.R
 initial_data$MouseID<-initial_data$ID+100
+initial_data$infest<-InfestStatus
+initial_data$fur<-furtime
+initial_data$scent<-simplescent
+initial_data$eyes<-Eyestatus
+mixinitial_data<-initial_data[c("MouseID","scent","fur","infest","eyes","Timesincedeath")]
+mixinitial_data
+mixmydata<-mydata[c("MouseID","scent","fur","infest","eyes","TimeSinceDeath")]
+mixmydata
+mixmydata<-mixmydata %>% rename("Timesincedeath"="TimeSinceDeath")
+mixmydata
+mixinitial_data
+mixeddata<-rbind(mixmydata,mixinitial_data)
+mixeddata
+
+mixedGLM<-glmmTMB(Timesincedeath~fur+scent+infest+eyes+(1|MouseID),data=mixeddata,family=Gamma(link ="log"))
+summary(mixedGLM)
+mixedsimulationoutput<-simulateResiduals(fittedModel=mixedGLM,plot=TRUE)
+#Going to test models with various levels of predictors
+mtest1<-glmmTMB(Timesincedeath~eyes+infest+fur+scent+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest2<-glmmTMB(Timesincedeath~eyes+infest+fur+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest3<-glmmTMB(Timesincedeath~eyes+infest+scent+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest4<-glmmTMB(Timesincedeath~eyes+fur+scent+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest5<-glmmTMB(Timesincedeath~infest+fur+scent+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest6<-glmmTMB(Timesincedeath~eyes+infest+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest7<-glmmTMB(Timesincedeath~fur+scent+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest8<-glmmTMB(Timesincedeath~eyes+scent+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+mtest9<-glmmTMB(Timesincedeath~infest+fur+(1|MouseID),data=mixeddata,family=Gamma(link="log"))
+
+simulation1output<-simulateResiduals(fittedModel=mtest1,plot=TRUE)
+simulation2output<-simulateResiduals(fittedModel=mtest2,plot=TRUE)
+simulation3output<-simulateResiduals(fittedModel=mtest3,plot=TRUE)
+simulation4output<-simulateResiduals(fittedModel=mtest4,plot=TRUE)
+simulation5output<-simulateResiduals(fittedModel=mtest5,plot=TRUE)
+simulation6output<-simulateResiduals(fittedModel=mtest6,plot=TRUE)
+simulation7output<-simulateResiduals(fittedModel=mtest7,plot=TRUE)
+simulation8output<-simulateResiduals(fittedModel=mtest8,plot=TRUE)
+simulation9output<-simulateResiduals(fittedModel=mtest9,plot=TRUE)
+
+mixeddata$DaysSinceDeath<-ifelse(mixeddata$Timesincedeath>=0&mixeddata$Timesincedeath<=1440,1,0)
+MixedBinomialGLM<-glmmTMB(DaysSinceDeath~eyes+infest+fur+scent +(1|MouseID),data=mixeddata,family=binomial)
+summary(MixedBinomialGLM)
+mixedbinomialoutput<-simulateResiduals(fittedModel=MixedBinomialGLM,plot=TRUE)
+#plot
+
+marginal1<-ggpredict(MixedBinomialGLM, terms = c("infest","fur","scent","eyes"))
+plot(marginal1)
+colnames(marginal1)<-c('infest', 'pred', 'se', 'cl', 'cu', 'fur', 'scent', 'eyes')
+SecondFigure<-ggplot(data=marginal1, aes(x=as.factor(infest), y=pred, ymin=cl, ymax=cu,color=as.factor(eyes)))+geom_pointrange()+facet_grid(fur~scent)
+SecondFigure
+SecondFigure2<-SecondFigure+labs(title="Probability of freshness based on carcass")
+furnames<-c('0'="Intact",'1'="Removable")
+scentnames<-c('0'="No scent",'1'="scent present") 
+SecondFigure3<-SecondFigure2+facet_grid(fur~scent,labeller=labeller(fur=as_labeller(furnames),scent=as_labeller(scentnames)))
+SecondFigure4<-SecondFigure3+scale_color_discrete(name = "Eyes", labels = c("1" = "Damaged/Absent", "0" = "Round and moist"))
+SecondFigure5<-SecondFigure4+labs(x = "Infestation", y = "Time since death (min)")
+SecondFigure5
